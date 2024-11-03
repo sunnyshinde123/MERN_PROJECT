@@ -1,0 +1,58 @@
+version: "3.8"
+
+
+services:
+   mongodb:
+    image: mongo:latest
+    container_name: mongos-container
+    environment:
+       MONGO_INITDB_ROOT_USERNAME: root
+       MONGO_INITDB_ROOT_PASSWORD: admin
+       MONGO_INITDB_DATABASE: wanderlust
+    volumes:
+      - mern-storage:/data/db
+    networks:
+      - mern
+    ports:
+      - 27017:27017
+    restart: always
+    healthcheck:
+      test: ["CMD", "mongosh", "--username","root","--password","admin", "--eval","db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+   mernapp:
+     build:
+       context: .
+       dockerfile: ./Docker-multi-stage
+     container_name: mern-app
+     environment:
+       DB_HOST: mongos-container
+       DB_USER: root
+       DB_PASSWORD: admin
+       DB_DATABASE: wanderlust
+     networks:
+       - mern
+     ports:
+       - 7080:7080
+     depends_on:
+       - mongodb
+     restart: always
+     healthcheck:
+        test: ["CMD-SHELL","curl -f http://localhost:7080/"]
+        interval: 10s
+        timeout: 10s
+        retries: 10
+        start_period: 60s
+
+volumes:
+  mern-storage:
+    
+networks:
+  mern:
+    
+
+
+
