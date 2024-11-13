@@ -16,14 +16,14 @@ client/ - Contains the frontend code built with React.
 server/ - Contains the backend code using Node.js and Express.
 Dockerfile - Used for creating a Docker image of the application.
 docker-compose.yml - Manages the multi-container setup for the MERN stack.
-Prerequisites
-# Make sure you have the following installed:
+# Prerequisites
+Make sure you have the following installed:
 
 Node.js (v14 or later)
 MongoDB
 Docker (for containerization)
 Docker Compose (for managing multi-container applications)
-Installation
+# Installation
 Follow these steps to set up and run the project locally.
 
 Clone the repository:
@@ -53,10 +53,10 @@ cd ../server
 npm start
 The application should now be running locally.
 
-Usage
+# Usage
 Once the application is running, you can access it in your browser at http://localhost:[PORT]. Use the provided interface to interact with the application.
 
-Using Docker
+# Using Docker
 To build and run the application using Docker:
 
 Build the Docker Image:
@@ -69,7 +69,7 @@ Access the Application:
 
 Client: http://localhost:3000
 Server: http://localhost:5000
-Using Docker Compose
+# Using Docker Compose
 To manage the multi-container setup with Docker Compose:
 
 Set up Environment Variables (if not already set up):
@@ -85,8 +85,8 @@ docker ps
 Stopping Containers:
 
 docker-compose down
-Contributing
+# Contributing
 Contributions are welcome! Please fork the repository and create a pull request for any enhancements, bug fixes, or new features.
 
-License
+# License
 This project is licensed under the MIT License. See LICENSE for more details.
