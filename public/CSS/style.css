@@ -39,6 +39,7 @@ body{
   width: 20rem;
 }
 
+
 /*footer style */
 .box{
   display: flex;
@@ -140,3 +141,20 @@ body{
 .card-btns{
   display: flex;
 }
+
+/* Review Card */
+
+.review-card{
+  border: 2px solid black !important;
+}
+
+.review-box{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.review-date{
+  font-size: small !important;
+}
+

@@ -1,4 +1,5 @@
 const mongoose=require("mongoose");
+const Review = require("./review");
 
 const listingSchema=new mongoose.Schema({
   title:{
@@ -12,15 +13,25 @@ const listingSchema=new mongoose.Schema({
       default:"https://plus.unsplash.com/premium_photo-1661915661139-5b6a4e4a6fcc?q=80&w=1934&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     filename:{
-      type:String
+      type:String,
+      default:"listingimage"
     }
   },
   price:{
     type:Number,
   },
   location:String,
-  country:String
+  country:String,
+  reviews:[
+    {type:mongoose.Schema.Types.ObjectId, ref:Review}
+  ]
 });
+
+listingSchema.post("findOneAndDelete", async(listing)=>{
+  if(listing.reviews.length){
+    await Review.deleteMany({_id: {$in: listing.reviews}})
+  }
+})
 
 const Listing=mongoose.model('Listing', listingSchema);
 
