@@ -11,7 +11,13 @@ const {reviewSchema}=require("./utils/review.js");
 const Review=require("./models/review.js");
 const listingRouter=require("./routes/listingroute.js");
 const reviewRouter=require("./routes/reviewroute.js");
-const session = require('express-session')
+const session = require('express-session');
+const flash = require('connect-flash');
+const passport=require("passport");
+const LocalStrategy=require("passport-local");
+const User=require("./models/User.js");
+const userRouter=require("./routes/userroute.js");
+
 
 const app=express();
 const port=7080;
@@ -23,6 +29,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(methodOverride('_method'));
+app.use(flash());
 app.engine('ejs', engine);
 
 main().then(()=>{
@@ -40,18 +47,45 @@ app.listen(port, ()=>{
 app.use(session({
   secret:"mysecret",
   resave:true,
-  saveUninitialized:false
-}))
+  saveUninitialized:false,
+  cookie:{
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true
+  }
+}));
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next)=>{
+  res.locals.success=req.flash("success");
+  res.locals.error=req.flash("error");
+  next();
+})
 
 app.get("/", (req, res)=>{
   res.send("Welcome to wonderlust");
 })
 
+app.get("/demouser", async(req, res)=>{
+  const fakeUser=new User({
+    email:"sunnyshinde157@gmail.com",
+    username:"SunnyShinde"
+  });
+
+  await User.register(fakeUser, "Devops@2001");
+  res.send("Thanks for login");
+});
+
+app.use("/", userRouter);
 
 app.use("/listings", listingRouter);
 
 app.use("/listings/:id/reviews", reviewRouter);
-
 
 app.all("*", (err, req, res, next)=>{
   next(err);

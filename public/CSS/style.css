@@ -158,3 +158,16 @@ body{
   font-size: small !important;
 }
 
+/* Signup Page */
+
+.cover{
+  border: 1px solid black;
+  padding: 2rem 4rem;
+  border-radius: 2rem;
+}
+
+.btn-signup{
+  font-size: larger;
+}
+
+
