@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mern-app
+  namespace: dev
+  labels:
+    app: mern
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mern
+  template:
+    metadata:
+      labels:
+        app: mern
+    spec:
+      initContainers:
+      - name: wait-for-mongodb
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z mongodb-0.mongo-headless 27017; do echo waiting for mongodb; sleep 5; done;']
+      containers:
+      - name: mern-container
+        image: sunny002/mern-app
+        ports:
+        - containerPort: 7080
+        env:
+        - name: dbHost
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: dbHost
+        - name: dbUser
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: dbUser
+        - name: dbName
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: dbName
+        - name: dbPassword
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: dbPassword
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 7080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 7080
+          initialDelaySeconds: 10
+          periodSeconds: 5

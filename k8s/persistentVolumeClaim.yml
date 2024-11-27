@@ -4,7 +4,7 @@ metadata:
   name: bankapp-pvc
   namespace: dev
   labels:
-    app: bankapp
+    app: mern
 spec:
   accessModes:
     - ReadWriteOnce

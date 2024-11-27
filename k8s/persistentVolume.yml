@@ -4,7 +4,7 @@ metadata:
   name: bankapp-pv
   namespace: dev
   labels:
-    app: bankapp
+    app: mern
 spec:
   capacity:
     storage: 5Gi
