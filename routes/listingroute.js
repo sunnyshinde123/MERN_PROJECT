@@ -4,6 +4,7 @@ const ExpressError = require("../ExpressError.js");
 const Listing = require("../models/listing.js");
 const mongoose = require("mongoose");
 const { listingSchema } = require("../utils/schema.js");
+const {isLoggedIn}=require("../utils/middleware.js");
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.get("/", async (req, res) => {
 });
 
 //New Listing Route
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("listing/new.ejs");
 });
 
@@ -37,7 +38,7 @@ router.get(
       return next(new ExpressError(400, "Invalid listing id format"));
     }
 
-    let listing = await Listing.findById(id).populate("reviews");
+    let listing = await Listing.findById(id).populate("reviews").populate("owner");
     console.log(listing);
     if (!listing) {
       req.flash("error", "Listing doesn't exists !");
@@ -49,20 +50,22 @@ router.get(
 
 //Create Route
 router.post(
-  "/",
+  "/", isLoggedIn,
   listingValidation,
   wrapAsync(async (req, res, next) => {
     let { listing } = req.body;
     console.log(listing);
     let newListing = new Listing(listing);
+    newListing.owner=req.user._id;
     await newListing.save();
+    console.log(newListing);
     req.flash("success", "Listing Added Successfully");
     res.redirect("/listings");
   })
 );
 
 //Edit Listing
-router.get("/:id/edit", async (req, res) => {
+router.get("/:id/edit", isLoggedIn, async (req, res) => {
   let { id } = req.params;
   let data = await Listing.findById(id);
   if(!data){
@@ -82,7 +85,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 //Delete Route
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", isLoggedIn, async (req, res) => {
   let { id } = req.params;
   let result = await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing Deleted Successfully");

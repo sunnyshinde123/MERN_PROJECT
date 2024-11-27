@@ -1,17 +1,20 @@
 const mongoose=require("mongoose");
 const Review = require("./review");
+const User=require("./User");
 
 const dbHost = process.env.DB_HOST || "localhost";
 const dbUser = process.env.DB_USER || "root";
 const dbPassword = process.env.DB_PASSWORD || "admin";
 const dbName = process.env.DB_DATABASE || "wanderlustweb";
 
+const mongoURI = `mongodb://${dbUser}:${dbPassword}@${dbHost}:27017/${dbName}?authSource=admin`;
+
 main()
   .then(() => console.log("DB Connected Successfully"))
   .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect(`mongodb://127.0.0.1:27017/wanderlustweb`);
+  await mongoose.connect(mongoURI);
 }
 
 
@@ -38,7 +41,11 @@ const listingSchema=new mongoose.Schema({
   country:String,
   reviews:[
     {type:mongoose.Schema.Types.ObjectId, ref:Review}
-  ]
+  ],
+  owner:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref: User
+  }
 });
 
 listingSchema.post("findOneAndDelete", async(listing)=>{
