@@ -25,35 +25,35 @@ spec:
         ports:
         - containerPort: 7080
         env:
-        - name: dbHost
+        - name: DB_HOST
           valueFrom:
             configMapKeyRef:
               name: mongodb-config
-              key: dbHost
-        - name: dbUser
+              key: DB_HOST
+        - name: DB_USER
           valueFrom:
             configMapKeyRef:
               name: mongodb-config
-              key: dbUser
-        - name: dbName
+              key: DB_USER
+        - name: DB_DATABASE
           valueFrom:
             configMapKeyRef:
               name: mongodb-config
-              key: dbName
-        - name: dbPassword
+              key: DB_DATABASE
+        - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: mongodb-secret
-              key: dbPassword
+              key: DB_PASSWORD
         livenessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 7080
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /health
+            path: /
             port: 7080
           initialDelaySeconds: 10
           periodSeconds: 5

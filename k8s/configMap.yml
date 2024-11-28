@@ -6,6 +6,6 @@ metadata:
 data:
   MONGO_INITDB_ROOT_USERNAME: root
   MONGO_INITDB_DATABASE: wanderlustwebdb
-  dbHost: mongo-headless
-  dbUser: root
-  dbName: wanderlustwebdb
+  DB_HOST: mongo-headless
+  DB_USER: root
+  DB_DATABASE: wanderlustwebdb

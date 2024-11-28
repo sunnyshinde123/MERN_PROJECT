@@ -22,11 +22,6 @@ spec:
         ports:
         - containerPort: 27017
         env:
-        - name: dbPassword
-          valueFrom:
-            secretKeyRef:
-              name: mongodb-secret
-              key: dbPassword
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -42,21 +37,6 @@ spec:
             configMapKeyRef:
               name: mongodb-config
               key: MONGO_INITDB_DATABASE
-        - name: dbHost
-          valueFrom:
-            configMapKeyRef:
-              name: mongodb-config
-              key: dbHost
-        - name: dbUser
-          valueFrom:
-            configMapKeyRef:
-              name: mongodb-config
-              key: dbUser
-        - name: dbName
-          valueFrom:
-            configMapKeyRef:
-              name: mongodb-config
-              key: dbName
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db
