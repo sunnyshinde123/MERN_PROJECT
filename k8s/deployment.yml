@@ -24,6 +24,13 @@ spec:
         image: sunny002/mern-app
         ports:
         - containerPort: 7080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
         env:
         - name: DB_HOST
           valueFrom:
