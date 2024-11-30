@@ -1,0 +1,12 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: mern-vpa
+  namespace: dev
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mern-app
+  updatePolicy:
+    updateMode: "Auto" # Options: "Off", "Initial", "Auto"
