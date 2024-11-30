@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: mern-app
+  namespace: dev
+  labels:
+    app: mern
+spec:
+  selector:
+    matchLabels:
+      app: mern
+  template:
+    metadata:
+      labels:
+        app: mern
+    spec:
+      initContainers:
+      - name: wait-for-mongodb
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z mongodb-0.mongo-headless 27017; do echo waiting for mongodb; sleep 5; done;']
+      containers:
+      - name: mern-container
+        image: sunny002/mern-app
+        ports:
+        - containerPort: 7080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: DB_HOST
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: DB_USER
+        - name: DB_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mongodb-config
+              key: DB_DATABASE
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongodb-secret
+              key: DB_PASSWORD
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 7080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 7080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      tolerations:
+      - key: "prod"
+        operator: "Equal"
+        value: "true"
+        effect: "NoSchedule"
