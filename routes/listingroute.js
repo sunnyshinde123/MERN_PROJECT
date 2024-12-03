@@ -4,19 +4,11 @@ const ExpressError = require("../ExpressError.js");
 const Listing = require("../models/listing.js");
 const mongoose = require("mongoose");
 const { listingSchema } = require("../utils/schema.js");
-const {isLoggedIn}=require("../utils/middleware.js");
+const {isLoggedIn, isOwner, listingValidation}=require("../utils/middleware.js");
 
 const router = express.Router();
 
-const listingValidation = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    let errMesg = error.details.map((el) => el.message).join(",");
-    next(new ExpressError(400, errMesg));
-  } else {
-    next();
-  }
-};
+
 
 //index route
 router.get("/", async (req, res) => {
@@ -38,7 +30,7 @@ router.get(
       return next(new ExpressError(400, "Invalid listing id format"));
     }
 
-    let listing = await Listing.findById(id).populate("reviews").populate("owner");
+    let listing = await Listing.findById(id).populate({path: "reviews", populate:{path:"author"}}).populate("owner");
     console.log(listing);
     if (!listing) {
       req.flash("error", "Listing doesn't exists !");
@@ -65,7 +57,7 @@ router.post(
 );
 
 //Edit Listing
-router.get("/:id/edit", isLoggedIn, async (req, res) => {
+router.get("/:id/edit", isLoggedIn, isOwner, async (req, res) => {
   let { id } = req.params;
   let data = await Listing.findById(id);
   if(!data){
@@ -76,7 +68,7 @@ router.get("/:id/edit", isLoggedIn, async (req, res) => {
 });
 
 //Update Route
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", isOwner, async (req, res) => {
   let { id } = req.params;
   let { listing } = req.body;
   let updatedData = await Listing.findByIdAndUpdate(id, listing, { new: true });
@@ -85,7 +77,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 //Delete Route
-router.delete("/:id", isLoggedIn, async (req, res) => {
+router.delete("/:id", isLoggedIn, isOwner, async (req, res) => {
   let { id } = req.params;
   let result = await Listing.findByIdAndDelete(id);
   req.flash("success", "Listing Deleted Successfully");

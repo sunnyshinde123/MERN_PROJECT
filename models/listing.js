@@ -7,7 +7,8 @@ const dbUser = process.env.DB_USER || "root";
 const dbPassword = process.env.DB_PASSWORD || "admin";
 const dbName = process.env.DB_DATABASE || "wanderlustweb";
 
-const mongoURI = `mongodb://${dbUser}:${dbPassword}@${dbHost}:27017/${dbName}?authSource=admin`;
+/* const mongoURI = `mongodb://${dbUser}:${dbPassword}@${dbHost}:27017/${dbName}?authSource=admin`;*/
+const mongoURI = `mongodb://127.0.0.1:27017/wanderlustweb`
 
 main()
   .then(() => console.log("DB Connected Successfully"))

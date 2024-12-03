@@ -69,7 +69,7 @@ app.use((req, res, next)=>{
 })
 
 app.get("/", (req, res)=>{
-  res.send("Welcome to wonderlust");
+  res.send("<h1>Welcome to wonderlust</h1>");
 })
 
 app.get("/demouser", async(req, res)=>{
