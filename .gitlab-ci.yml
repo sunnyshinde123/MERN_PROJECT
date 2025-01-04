@@ -1,0 +1,56 @@
+stages:
+  - build
+  - test
+  - push
+  - deploy
+
+build_Job:
+  stage: build
+  script:
+    - docker build -t mern-app:latest .
+    - mkdir -p mern-logs
+    - echo "$(date) - docker image build successfully" > mern-logs/app.log
+  tags:
+    - dev
+  artifacts:
+    paths:
+      - mern-logs
+    expire_in: 30 days
+
+test_Job:
+  stage: test
+  script:
+    - docker images | grep "mern-app"
+    - echo "$(date) - docker image present in docker image list" >> mern-logs/app.log
+  tags:
+    - dev
+  artifacts:
+    paths:
+      - mern-logs
+    expire_in: 30 days
+
+push_Job:
+  stage: push
+  script:
+    - docker image tag mern-app:latest $DOCKER_USER/mern-app:latest
+    - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+    - docker push $DOCKER_USER/mern-app:latest
+    - echo "$(date) - docker image push to the docker hub repo" >> mern-logs/app.log
+  tags:
+    - dev
+  artifacts:
+    paths:
+      - mern-logs
+    expire_in: 30 days
+
+deploy_Job:
+  stage: deploy
+  script:
+    - docker compose up -d
+    - echo "$(date) - mern application running on port 7080" >> mern-logs/app.log
+  tags:
+    - dev
+  artifacts:
+    paths:
+      - mern-logs
+    expire_in: 30 days
